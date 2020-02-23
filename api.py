@@ -22,13 +22,13 @@ rates = [
     {
         "days": "fri,sat,sun",
         "times": "0900-2100",
-        "tz": "America/Los_Angeles",
+        "tz": "America/Chicago",
         "price": 2000
     },
     {
         "days": "wed",
         "times": "0600-1800",
-        "tz": "America/New_York",
+        "tz": "America/Chicago",
         "price": 1750
     },
     {
@@ -67,35 +67,61 @@ def set_rates():
 def query_rate():
     # Dates are in ISO-8601 format with time offset.  They look like eg.
     # 2015-07-04T20:00:00+00:00
-    start_time = datetime.datetime.strptime( request.args.get('start_time'), "%Y-%m-%dT%H:%M:%S%z" )
-    end_time = datetime.datetime.strptime( request.args.get('end_time'), "%Y-%m-%dT%H:%M:%S%z" )
-    print(start_time.isoformat())
-    print(end_time.isoformat())
 
-    # Chicago specific
-    #print(start_time.astimezone(timezone('America/Chicago')).isoformat())
-    #print(start_time.astimezone(timezone('America/Chicago')).weekday())
-    #print(start_time.astimezone(timezone('America/Chicago')).hour)
+    # A rate bucket looks like:
+    #         {
+    #        "days": "mon,tues,thurs",
+    #        "times": "0900-2100",
+    #        "tz": "America/Chicago",
+    #        "price": 1500
+    #    },
+    # NOTE "days' uses a string of nonstandard abbreviations, therefore
+    # requiring the following translator:
+    weekdays = { "mon":0, "tues":1, "wed":2, "thurs":3, 
+            "fri":4, "sat":5, "sun":6 }
 
-    for rate_dict in rates:
-        print(rate_dict["tz"])
+    query_start_time = datetime.datetime.strptime( request.args.get('start_time'), "%Y-%m-%dT%H:%M:%S%z" )
+    query_end_time = datetime.datetime.strptime( request.args.get('end_time'), "%Y-%m-%dT%H:%M:%S%z" )
+    print(query_start_time.isoformat())
+    print(query_end_time.isoformat())
+
+    for rate in rates:
         # "7. User input can span more than one day, but the API shouldn't 
-        # "return a valid rate"
+        # return a valid rate"
         # Note: Whether a date range spans multiple days can depend on if you
         # calculate it relative to its submitted tz or the rate bucket's tz.
-        # For purposes of matchign a rate, it makes sense to do the latter
-        print(start_time.astimezone(timezone(rate_dict["tz"])).isoformat())
-        print(end_time.astimezone(timezone(rate_dict["tz"])).isoformat())
-        #if first != second:
-        if start_time.astimezone(timezone(rate_dict["tz"])).weekday() != end_time.astimezone(timezone(rate_dict["tz"])).weekday():
-            print("Days don't match, skipping.")
+        # For purposes of matching a rate, it makes sense to do the latter
+        #print(query_start_time.astimezone(timezone(rate["tz"])).isoformat())
+        #print(query_end_time.astimezone(timezone(rate["tz"])).isoformat())
+        if query_start_time.astimezone(timezone(rate["tz"])).weekday() != query_end_time.astimezone(timezone(rate["tz"])).weekday():
+            #Timezone days don't match, skipping.
             continue;
-        print("Days matched.")
-        print(rate_dict["days"].split(','))
-        for day_of_week in rate_dict["days"].split(','):
+        print("Timezone days matched.")
+
+        [ rate_start_time, rate_end_time ] = rate["times"].split('-')
+        print(rate_start_time, rate_end_time)
+        print(query_start_time.astimezone(timezone(rate["tz"])).weekday())
+        print(query_end_time.astimezone(timezone(rate["tz"])).weekday())
+        #print(rate["days"].split(','))
+        for day_of_week in rate["days"].split(','):
             print(day_of_week)
+            #print(weekdays[day_of_week])
+            if query_start_time.astimezone(timezone(rate["tz"])).weekday() != weekdays[day_of_week]:
+                #Weekdays don't match, skipping.
+                continue
+            print("matched weekday.")
+            print(query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M"))
+            print(query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M"))
+            if query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M") < rate_start_time:
+                print("query start before bucket start")
+                continue
+            if query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M") > rate_end_time:
+                print("query end time after bucket end time")
+                continue
+            print("MATCHED")
+            print(rate["price"])
         
     return '''<h1>The start time value is: {}</h1>
-              <h1>The end time value is:   {}</h1>'''.format(start_time.isoformat(), end_time.isoformat())
+              <h1>The end time value is:   {}</h1>'''.format(query_start_time.isoformat(), query_end_time.isoformat())
 
 app.run(host='0.0.0.0')
