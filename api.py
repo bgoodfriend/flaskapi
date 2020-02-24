@@ -4,9 +4,7 @@ import json
 import flask
 from flask import request, jsonify
 import datetime
-import dateutil.parser
 from pytz import timezone
-from tzlocal import get_localzone
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -45,29 +43,7 @@ rates = [
     }
 ]
 
-@app.route('/', methods=['GET'])
-def home():
-    return "<h1>Flask basic API example</h1><p>This site implements a GET, query via GET, and a POST.</p>"
-
-# A route to return all of the available entries in our catalog.
-@app.route('/rates/', methods=['GET'])
-def api_all():
-    return jsonify(rates)
-
-@app.route('/setrates', methods=['POST'])
-def set_rates():
-    req = request.get_json()
-
-    global rates
-    rates = req['rates']
-    print(rates)
-    return "Thanks!"
-
-@app.route('/query-rate')
-def query_rate():
-    # Dates are in ISO-8601 format with time offset.  They look like eg.
-    # 2015-07-04T20:00:00+00:00
-
+def check_rates( query_start_time, query_end_time ):
     # A rate bucket looks like:
     #         {
     #        "days": "mon,tues,thurs",
@@ -77,51 +53,72 @@ def query_rate():
     #    },
     # NOTE "days' uses a string of nonstandard abbreviations, therefore
     # requiring the following translator:
-    weekdays = { "mon":0, "tues":1, "wed":2, "thurs":3, 
+    weekdays = { "mon":0, "tues":1, "wed":2, "thurs":3,
             "fri":4, "sat":5, "sun":6 }
 
-    query_start_time = datetime.datetime.strptime( request.args.get('start_time'), "%Y-%m-%dT%H:%M:%S%z" )
-    query_end_time = datetime.datetime.strptime( request.args.get('end_time'), "%Y-%m-%dT%H:%M:%S%z" )
-    print(query_start_time.isoformat())
-    print(query_end_time.isoformat())
-
     for rate in rates:
-        # "7. User input can span more than one day, but the API shouldn't 
+        # "7. User input can span more than one day, but the API shouldn't
         # return a valid rate"
         # Note: Whether a date range spans multiple days can depend on if you
         # calculate it relative to its submitted tz or the rate bucket's tz.
         # For purposes of matching a rate, it makes sense to do the latter
-        #print(query_start_time.astimezone(timezone(rate["tz"])).isoformat())
-        #print(query_end_time.astimezone(timezone(rate["tz"])).isoformat())
+
         if query_start_time.astimezone(timezone(rate["tz"])).weekday() != query_end_time.astimezone(timezone(rate["tz"])).weekday():
-            #Timezone days don't match, skipping.
+            #Timezone days don't match: skip.
             continue;
-        print("Timezone days matched.")
 
         [ rate_start_time, rate_end_time ] = rate["times"].split('-')
-        print(rate_start_time, rate_end_time)
-        print(query_start_time.astimezone(timezone(rate["tz"])).weekday())
-        print(query_end_time.astimezone(timezone(rate["tz"])).weekday())
-        #print(rate["days"].split(','))
         for day_of_week in rate["days"].split(','):
-            print(day_of_week)
-            #print(weekdays[day_of_week])
             if query_start_time.astimezone(timezone(rate["tz"])).weekday() != weekdays[day_of_week]:
-                #Weekdays don't match, skipping.
+                #Query weekdays don't match in this tz: skip.
                 continue
-            print("matched weekday.")
-            print(query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M"))
-            print(query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M"))
+
             if query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M") < rate_start_time:
-                print("query start before bucket start")
+                #Query start time before bucket start time: skip
                 continue
             if query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M") > rate_end_time:
-                print("query end time after bucket end time")
+                #Query end time after bucket end time: skip
                 continue
-            print("MATCHED")
-            print(rate["price"])
-        
-    return '''<h1>The start time value is: {}</h1>
-              <h1>The end time value is:   {}</h1>'''.format(query_start_time.isoformat(), query_end_time.isoformat())
+
+            # If you reached here, this is a match.
+            return str(rate["price"])
+    # If you got this far, you went through every bucket without a match
+    return "unavialable"
+
+@app.route('/', methods=['GET'])
+def home():
+    return "<h1>Flask basic API example</h1><p>This site implements a GET, query via GET, and a POST.</p>"
+
+@app.route('/rates/', methods=['GET'])
+def api_all():
+    return jsonify(rates)
+
+@app.route('/setrates', methods=['POST'])
+def set_rates():
+    # "10. The application publishes a second API endpoint where rate 
+    # information can be updated by submitting a modified rates JSON and 
+    # can be stored in memory"
+    req = request.get_json()
+
+    global rates
+    rates = req['rates']
+    return "Thanks!"
+
+@app.route('/query-rate', methods=['GET', 'POST'])
+def query_rate():
+    # Dates are in ISO-8601 format with time offset.  They look like eg.
+    # 2015-07-04T20:00:00+00:00
+    query_date_format = "%Y-%m-%dT%H:%M:%S%z"
+
+    if flask.request.method == 'GET':
+        query_start_time = datetime.datetime.strptime( request.args.get('start_time'), query_date_format )
+        query_end_time = datetime.datetime.strptime( request.args.get('end_time'), query_date_format )
+    else:
+        query_start_time = datetime.datetime.strptime( request.json['start_time'], query_date_format )
+        query_end_time = datetime.datetime.strptime( request.json['end_time'], query_date_format )
+
+    return check_rates( query_start_time, query_end_time )
 
 app.run(host='0.0.0.0')
+
+
