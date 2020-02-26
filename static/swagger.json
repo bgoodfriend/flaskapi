@@ -1,0 +1,88 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Bob Goodfriend Flask API proof of concept",
+    "version": "1.0.0",
+    "title": "Bob Goodfriend Flask API proof of concept",
+    "contact": {
+      "email": "bob.goodfriend@gmail.com",
+    },
+    "license": {
+      "name": "GNU General Public License",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+    }
+  },
+  "components": {
+    "schemas": {
+      "rates": {
+        "type": "object",
+        "properties": {
+          "rates": {
+            "type": "array",
+            "items": {
+			  "type": "object",
+			  "properties": {
+                "days": {
+                  "type": "string",
+                },
+                "times": {
+                  "type": "string",
+                },
+                "tz": {
+                  "type": "string",
+                },
+                "price": {
+                  "type": "integer",
+                }
+			  }
+            }
+          }
+		}
+      }
+    }
+  },
+  "paths": {
+    "/rates": {
+      "get": {
+	"tags": [
+	  "rates"
+	],
+	"summary": "Returns rates",
+	"responses": {
+	  "200": {
+	    "description": "OK",
+	    "schema": {
+	      "$ref": "#/components/schemas/rates"
+	    }
+	  }
+	}
+      }
+    },
+    "/setrates": {
+      "put": {
+	"tags": [
+          "rates"
+        ],
+        "summary": "Set rates to a new JSON entry",
+	"requestBody": {
+	  "required": "true",
+	  "content": {
+	    "application/json": {
+	      "schema": {
+		"$ref": "#/components/schemas/rates"
+	      }
+	    }
+	  }
+	},
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/rates"
+            }
+          }
+        }
+      },
+    }
+  },
+}

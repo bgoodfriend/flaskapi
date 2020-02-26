@@ -2,12 +2,26 @@
 
 import json
 import flask
-from flask import request, jsonify
+from flask import Flask, request, jsonify
 import datetime
 from pytz import timezone
+from flask_swagger_ui import get_swaggerui_blueprint
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = True
+
+### swagger specific ###
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Bob Goodfriend Flask API proof of concept"
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+### end swagger specific ###
 
 ### Default rates.  
 rates = [
@@ -87,13 +101,13 @@ def check_rates( query_start_time, query_end_time ):
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Flask basic API example</h1><p>This site implements a GET, query via GET, and a POST.</p>"
+    return "<h1>Bob Goodfriend Flask API proof of concept</h1>"
 
 @app.route('/rates/', methods=['GET'])
-def api_all():
+def api_front():
     return jsonify(rates)
 
-@app.route('/setrates', methods=['POST'])
+@app.route('/setrates', methods=['PUT'])
 def set_rates():
     # "10. The application publishes a second API endpoint where rate 
     # information can be updated by submitting a modified rates JSON and 
