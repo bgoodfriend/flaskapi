@@ -5,11 +5,11 @@
     "version": "1.0.0",
     "title": "Bob Goodfriend Flask API proof of concept",
     "contact": {
-      "email": "bob.goodfriend@gmail.com",
+      "email": "bob.goodfriend@gmail.com"
     },
     "license": {
       "name": "GNU General Public License",
-      "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
     }
   },
   "components": {
@@ -23,16 +23,16 @@
 			  "type": "object",
 			  "properties": {
                 "days": {
-                  "type": "string",
+                  "type": "string"
                 },
                 "times": {
-                  "type": "string",
+                  "type": "string"
                 },
                 "tz": {
-                  "type": "string",
+                  "type": "string"
                 },
                 "price": {
-                  "type": "integer",
+                  "type": "integer"
                 }
 			  }
             }
@@ -44,36 +44,36 @@
   "paths": {
     "/rates": {
       "get": {
-	"tags": [
-	  "rates"
-	],
-	"summary": "Returns rates",
-	"responses": {
-	  "200": {
-	    "description": "OK",
-	    "schema": {
-	      "$ref": "#/components/schemas/rates"
-	    }
-	  }
-	}
+  	    "tags": [
+  	      "rates"
+  	    ],
+  	    "summary": "Returns rates",
+  	    "responses": {
+  	      "200": {
+  	        "description": "OK",
+  	        "schema": {
+  	          "$ref": "#/components/schemas/rates"
+  	        }
+  	      }
+  	    }
       }
     },
     "/setrates": {
       "put": {
-	"tags": [
+	    "tags": [
           "rates"
         ],
         "summary": "Set rates to a new JSON entry",
-	"requestBody": {
-	  "required": "true",
-	  "content": {
-	    "application/json": {
-	      "schema": {
-		"$ref": "#/components/schemas/rates"
-	      }
-	    }
-	  }
-	},
+    	"requestBody": {
+    	  "required": "true",
+    	  "content": {
+    	    "application/json": {
+    	      "schema": {
+    	        "$ref": "#/components/schemas/rates"
+    	      }
+    	    }
+    	  }
+    	},
         "responses": {
           "200": {
             "description": "OK",
@@ -82,7 +82,65 @@
             }
           }
         }
-      },
+      }
+    },
+	"/query-rate": {
+	  "get": {
+	    "tags": [
+          "rates"
+        ],
+		"summary": "Query for a rate between two times, via GET with inline parameters",
+		"parameters": [
+		  {
+		    "in": "query",
+		    "name": "start_time",
+		    "description": "Start time in ISO-8601 format with time offset",
+            "required": true,
+			"schema": {
+		      "type": "string"		  
+			}
+          },
+		  {
+		    "in": "query",
+		    "name": "end_time",
+		    "description": "End time in ISO-8601 format with time offset",
+            "required": true,
+			"schema": {
+		      "type": "string"		  
+			}
+          }
+		],
+		"responses": {
+		  "200": {
+		    "description": "String containing either matched rate, or 'unavailable'",
+			"type": "string"
+		  }
+		}
+	  },
+	  "post": {
+        "tags": [
+          "rates"
+        ],
+        "summary": "Query for a rate between two times, via POST JSON",
+		"requestBody": {
+		  "required": true,
+		  "content": {
+			"application/json": {
+			  "schema": {
+				"type": "object",
+                "properties": {
+				  "start_time": {
+					"type": "string",
+				  },
+				  "endtime": {
+					"type": "string"
+				  }
+  				}
+			  }
+			}
+		  }
+        }
+      } 
     }
-  },
+  }
 }
