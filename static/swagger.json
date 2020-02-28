@@ -130,7 +130,7 @@
 				"type": "object",
                 "properties": {
 				  "start_time": {
-					"type": "string",
+					"type": "string"
 				  },
 				  "endtime": {
 					"type": "string"
@@ -141,6 +141,14 @@
 		  }
         }
       } 
-    }
+    },
+	"/metrics": {
+	  "get": {
+		"tags": [
+		  "metrics"
+		],
+		"summary": "Prometheus/Kibana metrics"
+	  }
+	}
   }
 }

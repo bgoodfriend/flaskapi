@@ -6,9 +6,12 @@ from flask import Flask, request, jsonify
 import datetime
 from pytz import timezone
 from flask_swagger_ui import get_swaggerui_blueprint
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
+metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Application info', version='1.0.0')
+#app.config["DEBUG"] = True
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'
@@ -22,6 +25,7 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 ### end swagger specific ###
+
 
 ### Default rates.  
 rates = [
@@ -97,14 +101,17 @@ def check_rates( query_start_time, query_end_time ):
             # If you reached here, this is a match.
             return str(rate["price"])
     # If you got this far, you went through every bucket without a match
+    pass
     return "unavialable"
 
 @app.route('/', methods=['GET'])
 def home():
+    pass
     return "<h1>Bob Goodfriend Flask API proof of concept</h1>"
 
 @app.route('/rates/', methods=['GET'])
 def api_front():
+    pass
     return jsonify(rates)
 
 @app.route('/setrates', methods=['PUT'])
@@ -116,6 +123,7 @@ def set_rates():
 
     global rates
     rates = req['rates']
+    pass
     return "Thanks!"
 
 @app.route('/query-rate', methods=['GET', 'POST'])
@@ -132,6 +140,23 @@ def query_rate():
         query_end_time = datetime.datetime.strptime( request.json['end_time'], query_date_format )
 
     return check_rates( query_start_time, query_end_time )
+
+
+@app.route('/status/<int:status>')
+@metrics.do_not_track()
+@metrics.summary('requests_by_status', 'Request latencies by status',
+                 labels={'status': lambda r: r.status_code})
+@metrics.histogram('requests_by_status_and_path', 'Request latencies by status and path',
+                   labels={'status': lambda r: r.status_code, 'path': lambda: request.path})
+def echo_status(status):
+    return 'Status: %s' % status, status
+
+metrics.register_default(
+    metrics.counter(
+        'by_path_counter', 'Request count by request paths',
+        labels={'path': lambda: request.path}
+    )
+)
 
 app.run(host='0.0.0.0')
 
