@@ -1,0 +1,313 @@
+{
+	"info": {
+		"_postman_id": "23148bbf-fcc1-4966-adc1-87e751eb7211",
+		"name": "flaskapi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/ (root)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/rates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/rates",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #1 -5 offset",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/query-rate?start_time=2015-07-01T07:00:00-05:00&end_time=2015-07-01T12:00:00-05:00",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					],
+					"query": [
+						{
+							"key": "start_time",
+							"value": "2015-07-01T07:00:00-05:00"
+						},
+						{
+							"key": "end_time",
+							"value": "2015-07-01T12:00:00-05:00"
+						}
+					]
+				},
+				"description": "query-rate #1"
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #2 no offset",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/query-rate?start_time=2015-07-04T15:00:00%2B00:00&end_time=2015-07-04T20:00:00%2B00:00",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					],
+					"query": [
+						{
+							"key": "start_time",
+							"value": "2015-07-04T15:00:00%2B00:00"
+						},
+						{
+							"key": "end_time",
+							"value": "2015-07-04T20:00:00%2B00:00"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #3 +5 offset",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/query-rate?start_time=2015-07-04T07:00:00%2B05:00&end_time=2015-07-04T20:00:00%2B05:00",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					],
+					"query": [
+						{
+							"key": "start_time",
+							"value": "2015-07-04T07:00:00%2B05:00"
+						},
+						{
+							"key": "end_time",
+							"value": "2015-07-04T20:00:00%2B05:00"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/setrates including var. timezones",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rates\": [\r\n        {\r\n            \"days\": \"mon,tues,thurs\",\r\n            \"times\": \"0900-2100\",\r\n            \"tz\": \"America/Chicago\",\r\n            \"price\": 1500\r\n        },\r\n        {\r\n            \"days\": \"fri,sat,sun\",\r\n            \"times\": \"0900-2100\",\r\n            \"tz\": \"America/New_York\",\r\n            \"price\": 2000\r\n        },\r\n        {\r\n            \"days\": \"wed\",\r\n            \"times\": \"0600-1800\",\r\n            \"tz\": \"America/Los_Angeles\",\r\n            \"price\": 1750\r\n        },\r\n        {\r\n            \"days\": \"mon,wed,sat\",\r\n            \"times\": \"0100-0500\",\r\n            \"tz\": \"America/Chicago\",\r\n            \"price\": 1000\r\n        },\r\n        {\r\n            \"days\": \"sun,tues\",\r\n            \"times\": \"0100-0700\",\r\n            \"tz\": \"America/Chicago\",\r\n            \"price\": 925\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/setrates",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"setrates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start_time\":\"2015-07-01T07:00:00-05:00\",\r\n    \"end_time\":\"2015-07-01T12:00:00-05:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/query-rate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start_time\":\"2015-07-04T15:00:00+00:00\",\r\n    \"end_time\":\"2015-07-04T20:00:00+00:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/query-rate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-rate #3",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start_time\":\"2015-07-04T07:00:00+05:00\",\r\n    \"end_time\":\"2015-07-04T20:00:00+05:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/query-rate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query-rate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/swagger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/swagger",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"swagger"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/metrics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/metrics",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"metrics"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
