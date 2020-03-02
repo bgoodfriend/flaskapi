@@ -112,7 +112,7 @@ Thanks!
 
 I mostly live tested via Postman on a Windows box, querying a bridged VM running my app.  To test via postman, first install from [Postman Install](https://www.postman.com/downloads/), then Import the file "flaskapi.postman_collection" from this repo's root.  
 
-From there, you will need to define a global environment variable "base_url" set to your URL, eg "http://1270.0.1:5000".  
+From there, you will need to define a global environment variable "base_url" set to your URL, eg "http://127.0.0.1:5000".  
 
 After that, you can run smoke tests vial the Postman GUI.  They are comparable to the above /swagger and cron tests.
 
