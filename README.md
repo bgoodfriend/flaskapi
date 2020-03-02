@@ -16,6 +16,7 @@ Entrypoint is app.py.  rates.py is broken out to separate it from the Flask func
 .
 ├── app.py
 ├── Dockerfile
+├── flaskapi.postman_collection
 ├── LICENSE
 ├── rates.py
 ├── README.md
@@ -66,7 +67,7 @@ As indicated in that doc, additional endpoints are exposed at /rates, /setrates,
 
 The worst part of my implementation is that I don't yet have Python unit tests.
 The best way to test the app is with smoke testing (Examples).  
-Here are 3 different ways to test via Exmaple.
+Here are 3 different ways to test via Example.
 
 ### Testing via /swagger
 
@@ -76,7 +77,7 @@ For example, from {{URL}}/swagger, click on "GET /rates", then "Try it out", the
 
 ### Testing via curl
 
-All of the following should work from the command line.  These examples assume you did not change the default values from host:localhost (127.0.0.1) and port:5000.
+All of the following should work from the command line.  These examples assume you did not change the default values from host:localhost (127.0.0.1) and port:5000.  If you did, change your URL as necessary.
 
 Get current rates:
 ```
@@ -107,7 +108,7 @@ This example changes some time zones.  This is saved in memory, so this will cha
 Thanks!
 ```
 
-### Testing via Postman.
+### Testing via Postman
 
 I mostly live tested via Postman on a Windows box, querying a bridged VM running my app.  To test via postman, first install from [Postman Install](https://www.postman.com/downloads/), then Import the file "flaskapi.postman_collection" from this repo's root.  
 
@@ -117,5 +118,5 @@ After that, you can run smoke tests vial the Postman GUI.  They are comparable t
 
 ## Metrics
 
-Available at {{URL}/metrics.
+Available at {{URL}/metrics.  eg, http://127.0.0.1:5000/metrics.
 
