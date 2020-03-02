@@ -60,4 +60,47 @@ The API's Swagger UI at /swagger allows you to directly inject HTTP requests and
 For example, from {{URL}}/swagger, click on "GET /rates", then "Try it out", then "Execute".  This will show you that it ran `curl -X GET "{{URL}}:5000/rates" -H "accept: */*"`, and it got back a 200 response with the current rate table.
 
 
+### Testing via curl
+
+All of the following should work from the command line.  These examples assume you did not change the default values from host:localhost (127.0.0.1) and port:5000.
+
+Get current rates:
+```
+[root@localhost flaskapi]# curl "http://127.0.0.1:5000/rates/"
+[{"days":"mon,tues,thurs","price":1500,"times":"0900-2100","tz":"America/Chicago"},{"days":"fri,sat,sun","price":2000,"times":"0900-2100","tz":"America/Chicago"},{"days":"wed","price":1750,"times":"0600-1800","tz":"America/Chicago"},{"days":"mon,wed,sat","price":1000,"times":"0100-0500","tz":"America/Chicago"},{"days":"sun,tues","price":925,"times":"0100-0700","tz":"America/Chicago"}]
+```
+
+Rate queries via GET:
+```
+[root@localhost flaskapi]# curl "http://127.0.0.1:5000/query-rate?start_time=2015-07-01T07:00:00-05:00&end_time=2015-07-01T12:00:00-05:00"
+1750
+[root@localhost flaskapi]# curl "http://127.0.0.1:5000/query-rate?start_time=2015-07-04T15:00:00%2B00:00&end_time=2015-07-04T20:00:00%2B00:00"
+2000
+[root@localhost flaskapi]# curl "http://127.0.0.1:5000/query-rate?start_time=2015-07-04T07:00:00%2B05:00&end_time=2015-07-04T20:00:00%2B05:00"
+unavialable
+```
+
+A rate query via POST:
+```
+[root@localhost flaskapi]# curl -X POST 'http://10.0.0.222:5000/query-rate'  --header 'Content-Type: application/json' --data-raw '{"start_time":"2015-07-01T07:00:00-05:00","end_time":"2015-07-01T12:00:00-05:00"}'
+1750
+```
+
+Set rates to some new values.
+This example changes some time zones.  This is saved in memory, so this will change your query results!  Restarting the docker container will reload the defaults.
+```
+[root@localhost flaskapi]# curl -X PUT "http://127.0.0.1:5000/setrates" -H "accept: */*" -H "Content-Type: application/json" -d "{\"rates\":[{\"days\":\"mon,tues,thurs\",\"times\":\"0900-2100\",\"tz\":\"America/Chicago\",\"price\":1500},{\"days\":\"fri,sat,sun\",\"times\":\"0900-2100\",\"tz\":\"America/New_York\",\"price\":2000},{\"days\":\"wed\",\"times\":\"0600-1800\",\"tz\":\"America/Los_Angeles\",\"price\":1750},{\"days\":\"mon,wed,sat\",\"times\":\"0100-0500\",\"tz\":\"America/Chicago\",\"price\":1000},{\"days\":\"sun,tues\",\"times\":\"0100-0700\",\"tz\":\"America/Chicago\",\"price\":925}]}"
+Thanks!
+```
+
+### Testing via Postman.
+I mostly live tested via Postman on a Windows box, querying a bridged VM running my app.  To test via postman, first install from [Postman Install](https://www.postman.com/downloads/), then Import the file "flaskapi.postman_collection" from this repo's root.
+
+From there, you will need to define a global environment variable "base_url" set to your URL, eg "http://1270.0.1:5000".
+
+After that, you can run smoke tests vial the Postman GUI.  They are comparable to the above /swagger and cron tests.
+
+## Metrics
+
+Available at {{URL}/metrics.
 
