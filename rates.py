@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-import datetime
 from pytz import timezone
 
-### Default rates.
+# Default rates.
 rates = [
     {
         "days": "mon,tues,thurs",
@@ -37,7 +36,8 @@ rates = [
     }
 ]
 
-def check_rates( query_start_time, query_end_time ):
+
+def check_rates(query_start_time, query_end_time):
     # A rate bucket looks like:
     #         {
     #        "days": "mon,tues,thurs",
@@ -47,8 +47,8 @@ def check_rates( query_start_time, query_end_time ):
     #    },
     # NOTE "days' uses a string of nonstandard abbreviations, therefore
     # requiring the following translator:
-    weekdays = { "mon":0, "tues":1, "wed":2, "thurs":3,
-            "fri":4, "sat":5, "sun":6 }
+    weekdays = {"mon": 0, "tues": 1, "wed": 2, "thurs": 3,
+                "fri": 4, "sat": 5, "sun": 6}
 
     for rate in rates:
         # "7. User input can span more than one day, but the API shouldn't
@@ -58,20 +58,20 @@ def check_rates( query_start_time, query_end_time ):
         # For purposes of matching a rate, it makes sense to do the latter
 
         if query_start_time.astimezone(timezone(rate["tz"])).weekday() != query_end_time.astimezone(timezone(rate["tz"])).weekday():
-            #Timezone days don't match: skip.
-            continue;
+            # Timezone days don't match: skip.
+            continue
 
-        [ rate_start_time, rate_end_time ] = rate["times"].split('-')
+        [rate_start_time, rate_end_time] = rate["times"].split('-')
         for day_of_week in rate["days"].split(','):
             if query_start_time.astimezone(timezone(rate["tz"])).weekday() != weekdays[day_of_week]:
-                #Query weekdays don't match in this tz: skip.
+                # Query weekdays don't match in this tz: skip.
                 continue
 
             if query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M") < rate_start_time:
-                #Query start time before bucket start time: skip
+                # Query start time before bucket start time: skip
                 continue
             if query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M") > rate_end_time:
-                #Query end time after bucket end time: skip
+                # Query end time after bucket end time: skip
                 continue
 
             # If you reached here, this is a match.
@@ -79,4 +79,3 @@ def check_rates( query_start_time, query_end_time ):
     # If you got this far, you went through every bucket without a match
     pass
     return "unavialable"
-

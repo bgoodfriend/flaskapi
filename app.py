@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 
-import json
 import flask
 from flask import Flask, request, jsonify
 import datetime
-from pytz import timezone
 from flask_swagger_ui import get_swaggerui_blueprint
 from prometheus_flask_exporter import PrometheusMetrics
 
 # Local files
-from rates import rates, check_rates 
+from rates import rates, check_rates
 
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Application info', version='1.0.0')
-#app.config["DEBUG"] = True
+# app.config["DEBUG"] = True
 
-### swagger specific ###
+# create swagger UI
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
@@ -27,22 +25,25 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
-### end swagger specific ###
+# end swagger UI
+
 
 @app.route('/', methods=['GET'])
 def home():
     pass
     return "<h1>Bob Goodfriend Flask API proof of concept</h1>"
 
+
 @app.route('/rates/', methods=['GET'])
 def api_front():
     pass
     return jsonify(rates)
 
+
 @app.route('/setrates', methods=['PUT'])
 def set_rates():
-    # "10. The application publishes a second API endpoint where rate 
-    # information can be updated by submitting a modified rates JSON and 
+    # "10. The application publishes a second API endpoint where rate
+    # information can be updated by submitting a modified rates JSON and
     # can be stored in memory"
     req = request.get_json()
 
@@ -51,6 +52,7 @@ def set_rates():
     pass
     return "OK"
 
+
 @app.route('/query-rate', methods=['GET', 'POST'])
 def query_rate():
     # Dates are in ISO-8601 format with time offset.  They look like eg.
@@ -58,13 +60,14 @@ def query_rate():
     query_date_format = "%Y-%m-%dT%H:%M:%S%z"
 
     if flask.request.method == 'GET':
-        query_start_time = datetime.datetime.strptime( request.args.get('start_time'), query_date_format )
-        query_end_time = datetime.datetime.strptime( request.args.get('end_time'), query_date_format )
+        query_start_time = datetime.datetime.strptime(request.args.get('start_time'), query_date_format)
+        query_end_time = datetime.datetime.strptime(request.args.get('end_time'), query_date_format)
     else:
-        query_start_time = datetime.datetime.strptime( request.json['start_time'], query_date_format )
-        query_end_time = datetime.datetime.strptime( request.json['end_time'], query_date_format )
+        query_start_time = datetime.datetime.strptime(request.json['start_time'], query_date_format)
+        query_end_time = datetime.datetime.strptime(request.json['end_time'], query_date_format)
 
-    return check_rates( query_start_time, query_end_time )
+    return check_rates(query_start_time, query_end_time)
+
 
 metrics.register_default(
     metrics.counter(
