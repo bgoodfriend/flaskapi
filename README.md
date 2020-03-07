@@ -63,7 +63,30 @@ The API also exposes a GUI version of its swagger doc at {{URL}}/swagger, eg htt
 
 As indicated in that doc, additional endpoints are exposed at /rates, /setrates, /query-rate, and /metrics.
 
-## Testing and Examples
+## Automated tests
+
+From command line eg
+```
+[bgoodfriend@localhost flaskapi]$ python -m unittest discover -s tests
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.007s
+
+OK
+```
+
+Add coverage, and expose it at static/coverage/index.html:
+```
+[bgoodfriend@localhost flaskapi]$ coverage run --source flaskapi -m unittest discover -s tests
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.009s
+
+OK
+[bgoodfriend@localhost flaskapi]$ coverage html -d flaskapi/static/coverage/
+```
+
+## Smoke Testing and Examples
 
 The worst part of my implementation is that I don't yet have Python unit tests.
 The best way to test the app is with smoke testing (Examples).  
