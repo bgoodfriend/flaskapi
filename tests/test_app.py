@@ -3,6 +3,7 @@
 import os
 import unittest
 import tempfile
+#from flaskapi import app
 import flaskapi
 
 class FlaskapiTestCase(unittest.TestCase):

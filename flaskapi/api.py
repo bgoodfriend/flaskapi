@@ -1,15 +1,13 @@
-#!/usr/bin/env python
-
 import flask
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 import datetime
 from flask_swagger_ui import get_swaggerui_blueprint
 from prometheus_flask_exporter import PrometheusMetrics
 
-# Local files
-from rates import rates, check_rates
+# Local
+from flaskapi import app
+from flaskapi.rates import rates, check_rates
 
-app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Application info', version='1.0.0')
 # app.config["DEBUG"] = True
@@ -60,11 +58,15 @@ def query_rate():
     query_date_format = "%Y-%m-%dT%H:%M:%S%z"
 
     if flask.request.method == 'GET':
-        query_start_time = datetime.datetime.strptime(request.args.get('start_time'), query_date_format)
-        query_end_time = datetime.datetime.strptime(request.args.get('end_time'), query_date_format)
+        query_start_time = datetime.datetime.strptime(
+            request.args.get('start_time'), query_date_format)
+        query_end_time = datetime.datetime.strptime(
+            request.args.get('end_time'), query_date_format)
     else:
-        query_start_time = datetime.datetime.strptime(request.json['start_time'], query_date_format)
-        query_end_time = datetime.datetime.strptime(request.json['end_time'], query_date_format)
+        query_start_time = datetime.datetime.strptime(
+            request.json['start_time'], query_date_format)
+        query_end_time = datetime.datetime.strptime(
+            request.json['end_time'], query_date_format)
 
     return check_rates(query_start_time, query_end_time)
 
@@ -75,5 +77,3 @@ metrics.register_default(
         labels={'path': lambda: request.path}
     )
 )
-
-app.run(host='0.0.0.0')

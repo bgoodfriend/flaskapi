@@ -57,20 +57,24 @@ def check_rates(query_start_time, query_end_time):
         # calculate it relative to its submitted tz or the rate bucket's tz.
         # For purposes of matching a rate, it makes sense to do the latter
 
-        if query_start_time.astimezone(timezone(rate["tz"])).weekday() != query_end_time.astimezone(timezone(rate["tz"])).weekday():
+        if query_start_time.astimezone(timezone(rate["tz"])).weekday() \
+                != query_end_time.astimezone(timezone(rate["tz"])).weekday():
             # Timezone days don't match: skip.
             continue
 
         [rate_start_time, rate_end_time] = rate["times"].split('-')
         for day_of_week in rate["days"].split(','):
-            if query_start_time.astimezone(timezone(rate["tz"])).weekday() != weekdays[day_of_week]:
+            if query_start_time.astimezone(timezone(rate["tz"])).weekday() \
+                    != weekdays[day_of_week]:
                 # Query weekdays don't match in this tz: skip.
                 continue
 
-            if query_start_time.astimezone(timezone(rate["tz"])).strftime("%H%M") < rate_start_time:
+            if query_start_time.astimezone(
+                    timezone(rate["tz"])).strftime("%H%M") < rate_start_time:
                 # Query start time before bucket start time: skip
                 continue
-            if query_end_time.astimezone(timezone(rate["tz"])).strftime("%H%M") > rate_end_time:
+            if query_end_time.astimezone(
+                    timezone(rate["tz"])).strftime("%H%M") > rate_end_time:
                 # Query end time after bucket end time: skip
                 continue
 
