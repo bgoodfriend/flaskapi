@@ -57,16 +57,32 @@ def query_rate():
     # 2015-07-04T20:00:00+00:00
     query_date_format = "%Y-%m-%dT%H:%M:%S%z"
 
+    gotValidDates = None
     if flask.request.method == 'GET':
-        query_start_time = datetime.datetime.strptime(
-            request.args.get('start_time'), query_date_format)
-        query_end_time = datetime.datetime.strptime(
-            request.args.get('end_time'), query_date_format)
+        if request.args.get('start_time') is None \
+                or request.args.get('end_time') is None:
+            return "Please specify both start_time and end_time.", 400
+
+        try:
+            query_start_time = datetime.datetime.strptime(
+                request.args.get('start_time'), query_date_format)
+            query_end_time = datetime.datetime.strptime(
+                request.args.get('end_time'), query_date_format)
+        except ValueError:
+            gotValidDates = False
     else:
+        req = request.get_json()
+       
+        if 'start_time' not in req or 'end_time' not in req:
+            return "Please specify both start_time and end_time.", 400
+
         query_start_time = datetime.datetime.strptime(
-            request.json['start_time'], query_date_format)
+            req['start_time'], query_date_format)
         query_end_time = datetime.datetime.strptime(
-            request.json['end_time'], query_date_format)
+            req['end_time'], query_date_format)
+
+    if gotValidDates == False:
+        return "Bad format observed in start_time or end_time", 400
 
     return check_rates(query_start_time, query_end_time)
 
