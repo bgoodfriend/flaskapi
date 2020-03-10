@@ -42,10 +42,17 @@ class FlaskapiTestCase(unittest.TestCase):
         assert response.status_code == 200
         assert b'1750' in response.data
 
+
     def test_query_rates_get_with_missing_value(self):
         response = self.app.get('query-rate?end_time=2015-07-01T12:00:00-05:00')
         assert response.status_code == 400
         assert b'Please specify both start_time and end_time.' in response.data
+
+
+    def test_query_rates_get_with_bogus_value(self):
+        response = self.app.get('query-rate?start_time=bogus&end_time=2015-07-01T12:00:00-05:00')
+        assert response.status_code == 400
+        assert b'Bad format observed in start_time or end_time.' in response.data
 
 
     def test_query_rates_post_with_missing_value(self):
@@ -63,7 +70,7 @@ class FlaskapiTestCase(unittest.TestCase):
             'end_time': '2015-07-01T12:00:00-05:00'
             })
         assert response.status_code == 400 
-        assert b'Please specify both start_time and end_time.' in response.data
+        assert b'Bad format observed in start_time or end_time.' in response.data
 
 
     def test_query_rates_post(self):

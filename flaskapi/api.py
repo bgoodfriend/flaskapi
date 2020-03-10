@@ -76,13 +76,16 @@ def query_rate():
         if 'start_time' not in req or 'end_time' not in req:
             return "Please specify both start_time and end_time.", 400
 
-        query_start_time = datetime.datetime.strptime(
-            req['start_time'], query_date_format)
-        query_end_time = datetime.datetime.strptime(
-            req['end_time'], query_date_format)
+        try:
+            query_start_time = datetime.datetime.strptime(
+                req['start_time'], query_date_format)
+            query_end_time = datetime.datetime.strptime(
+                req['end_time'], query_date_format)
+        except ValueError:
+            gotValidDates = False
 
     if gotValidDates == False:
-        return "Bad format observed in start_time or end_time", 400
+        return "Bad format observed in start_time or end_time.", 400
 
     return check_rates(query_start_time, query_end_time)
 
