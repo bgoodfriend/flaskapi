@@ -1,13 +1,13 @@
 # flaskapi
-This repo is a proof of concept for creating an API.
+This repo was a rapidproof of concept for creating an API.
 
-This implementation allows GET/PUT to an array of buckets, and a GET or POST query to check those buckets against a requested time range.
+This implementation allows GET/PUT to an array of buckets, and a GET or POST query to check those buckets against a requested time range.  For simplicity the buckets are just a dict, but they could have been an S3 or Redis.
 
 This solution was created using Python: Flask, datetime, pytz (time zones).
 
 Metrics were added using [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/).
 
-I added a static swagger.json and exposed it with [flask-swagger-ui](https://github.com/sveint/flask-swagger-ui)https://pypi.org/project/prometheus-flask-exporter/).
+I added a static swagger.json and exposed it with [flask-swagger-ui](https://github.com/sveint/flask-swagger-ui).
 
 ## Manifest
 Entrypoint is app.py.  rates.py is broken out to separate it from the Flask functionality.
@@ -88,10 +88,6 @@ OK
 
 ## Smoke Testing and Examples
 
-The worst part of my implementation is that I don't yet have Python unit tests.
-The best way to test the app is with smoke testing (Examples).  
-Here are 3 different ways to test via Example.
-
 ### Testing via /swagger
 
 The API's Swagger UI at /swagger allows you to directly inject HTTP requests and see the results.  It even shows you the actual curl it crafted.  
@@ -125,7 +121,7 @@ A rate query via POST:
 ```
 
 Set rates to some new values. 
-This example changes some time zones.  This is saved in memory, so this will change your query results!  Restarting the docker container will reload the defaults.
+This example changes some time zones.  This is saved in memory.
 ```
 [root@localhost flaskapi]# curl -X PUT "http://127.0.0.1:5000/setrates" -H "accept: */*" -H "Content-Type: application/json" -d "{\"rates\":[{\"days\":\"mon,tues,thurs\",\"times\":\"0900-2100\",\"tz\":\"America/Chicago\",\"price\":1500},{\"days\":\"fri,sat,sun\",\"times\":\"0900-2100\",\"tz\":\"America/New_York\",\"price\":2000},{\"days\":\"wed\",\"times\":\"0600-1800\",\"tz\":\"America/Los_Angeles\",\"price\":1750},{\"days\":\"mon,wed,sat\",\"times\":\"0100-0500\",\"tz\":\"America/Chicago\",\"price\":1000},{\"days\":\"sun,tues\",\"times\":\"0100-0700\",\"tz\":\"America/Chicago\",\"price\":925}]}"
 Thanks!

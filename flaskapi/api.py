@@ -1,5 +1,6 @@
 import flask
-from flask import request, jsonify
+# from flask import request, jsonify
+from flask import request
 import datetime
 from flask_swagger_ui import get_swaggerui_blueprint
 from prometheus_flask_exporter import PrometheusMetrics
@@ -10,7 +11,7 @@ from flaskapi.rates import rates, check_rates
 
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Application info', version='1.0.0')
-# app.config["DEBUG"] = True
+app.config["DEBUG"] = True
 
 # create swagger UI
 SWAGGER_URL = '/swagger'
@@ -33,14 +34,14 @@ def home():
 
 @app.route('/rates/', methods=['GET'])
 def api_front():
-    return jsonify(rates)
+    # return jsonify(rates)
+    # return_str = ', '.join(rates)
+    print(str(rates))
+    return str(rates)
 
 
 @app.route('/setrates', methods=['PUT'])
 def set_rates():
-    # "10. The application publishes a second API endpoint where rate
-    # information can be updated by submitting a modified rates JSON and
-    # can be stored in memory"
     req = request.get_json()
 
     global rates
@@ -69,7 +70,7 @@ def query_rate():
             gotValidDates = False
     else:
         req = request.get_json()
-       
+
         if 'start_time' not in req or 'end_time' not in req:
             return "Please specify both start_time and end_time.", 400
 
@@ -81,7 +82,7 @@ def query_rate():
         except ValueError:
             gotValidDates = False
 
-    if gotValidDates == False:
+    if gotValidDates is False:
         return "Bad format observed in start_time or end_time.", 400
 
     return check_rates(query_start_time, query_end_time)
