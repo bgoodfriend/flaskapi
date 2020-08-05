@@ -1,7 +1,6 @@
 from setuptools import setup
 
 setup(name='flaskapi',
-      name='flaskapi',
       version='1.0',
       description='Flask API proof of concept',
       url='http://github.com/bgoodfriend/flaskapi',
@@ -10,5 +9,5 @@ setup(name='flaskapi',
       license='GNU General Public License v3.0',
       packages=['flaskapi'],
       install_package_data=True,
-      install_requires=[ 'flask' ],
+      install_requires=['flask'],
       zip_safe=False)

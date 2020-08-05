@@ -28,13 +28,11 @@ app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 
 @app.route('/', methods=['GET'])
 def home():
-    pass
     return "<h1>Bob Goodfriend Flask API proof of concept</h1>"
 
 
 @app.route('/rates/', methods=['GET'])
 def api_front():
-    pass
     return jsonify(rates)
 
 
@@ -47,7 +45,6 @@ def set_rates():
 
     global rates
     rates = req['rates']
-    pass
     return "OK"
 
 

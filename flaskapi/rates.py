@@ -81,5 +81,4 @@ def check_rates(query_start_time, query_end_time):
             # If you reached here, this is a match.
             return str(rate["price"])
     # If you got this far, you went through every bucket without a match
-    pass
-    return "unavialable"
+    return "unavailable"
