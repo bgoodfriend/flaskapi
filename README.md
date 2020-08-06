@@ -1,11 +1,11 @@
 # flaskapi
 This repo was a rapidproof of concept for creating an API.
 
-This implementation allows GET/PUT to an array of buckets, and a GET or POST query to check those buckets against a requested time range.  For simplicity the buckets are just a dict, but they could have been an S3 or Redis.
+This implementation allows GET/PUT to an array of buckets, and a GET or POST query to check those buckets against a requested time range.  For simplicity the buckets are just a list of dicts, but they could have been an S3 or Redis.
 
-This solution was created using Python: Flask, datetime, pytz (time zones).
+This solution was created using Python: Flask, datetime, pytz.
 
-Metrics were added using [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/).
+I added metrics using [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/).
 
 I added a static swagger.json and exposed it with [flask-swagger-ui](https://github.com/sveint/flask-swagger-ui).
 
@@ -68,9 +68,9 @@ As indicated in that doc, additional endpoints are exposed at /rates, /setrates,
 From command line eg
 ```
 [bgoodfriend@localhost flaskapi]$ python -m unittest discover -s tests
-.
+............
 ----------------------------------------------------------------------
-Ran 1 test in 0.007s
+Ran 12 tests in 0.371s
 
 OK
 ```
@@ -78,19 +78,18 @@ OK
 Add coverage, and expose it at static/coverage/index.html:
 ```
 [bgoodfriend@localhost flaskapi]$ coverage run --source flaskapi -m unittest discover -s tests
-.
+............
 ----------------------------------------------------------------------
-Ran 1 test in 0.009s
+Ran 12 tests in 0.440s
 
 OK
-[bgoodfriend@localhost flaskapi]$ coverage html -d flaskapi/static/coverage/
 ```
 
 ## Smoke Testing and Examples
 
 ### Testing via /swagger
 
-The API's Swagger UI at /swagger allows you to directly inject HTTP requests and see the results.  It even shows you the actual curl it crafted.  
+The API's Swagger UI at /swagger allows you to directly inject HTTP requests and see the results.  It also shows you the actual curl it crafted.  
 
 For example, from {{URL}}/swagger, click on "GET /rates", then "Try it out", then "Execute".  This will show you that it ran `curl -X GET "{{URL}}:5000/rates" -H "accept: */*"`, and it got back a 200 response with the current rate table.
 
@@ -129,7 +128,7 @@ Thanks!
 
 ### Testing via Postman
 
-I mostly live tested via Postman on a Windows box, querying a bridged VM running my app.  To test via postman, first install from [Postman Install](https://www.postman.com/downloads/), then Import the file "flaskapi.postman_collection" from this repo's root.  
+I mostly live tested via Postman from a Windows box, querying a bridged VM running my app.  To test via postman, first install from [Postman Install](https://www.postman.com/downloads/), then Import the file "flaskapi.postman_collection" from this repo's root.  
 
 From there, you will need to define a global environment variable "base_url" set to your URL, eg "http://127.0.0.1:5000".  
 

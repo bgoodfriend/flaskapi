@@ -19,7 +19,6 @@ class FlaskapiTestCase(unittest.TestCase):
     def test_rates(self):
         response = self.app.get('/rates/')
         assert response.status_code == 200
-        print(response.data)
         assert b"[{'days': 'mon,tues,thurs', 'times': '0900-2100', 'tz': 'America/Chicago', 'price': 1500}, {'days': 'fri,sat,sun', 'times': '0900-2100', 'tz': 'America/Chicago', 'price': 2000}, {'days': 'wed', 'times': '0600-1800', 'tz': 'America/Chicago', 'price': 1750}, {'days': 'mon,wed,sat', 'times': '0100-0500', 'tz': 'America/Chicago', 'price': 1000}, {'days': 'sun,tues', 'times': '0100-0700', 'tz': 'America/Chicago', 'price': 925}]" in response.data
 
     # These next 2 more or less static endpoints I assume are working if they
