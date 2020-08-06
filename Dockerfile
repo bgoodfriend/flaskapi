@@ -14,11 +14,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Install app
-COPY app.py .
-COPY rates.py .
-RUN mkdir static/
-COPY static/swagger.json static/
+RUN mkdir flaskapi/
+COPY flaskapi/. flaskapi/
 
-
+ENV FLASK_APP flaskapi/api.py
 EXPOSE 5000
-ENTRYPOINT ["python", "app.py"]
+ENTRYPOINT ["python", "-m", "flask", "run", "--host=0.0.0.0"] 

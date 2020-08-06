@@ -1,6 +1,5 @@
 import unittest
 import flaskapi
-from flask import json
 
 
 # There are no separate tests for rates.py.  It is implicitly tested via

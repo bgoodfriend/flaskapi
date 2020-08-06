@@ -34,9 +34,6 @@ def home():
 
 @app.route('/rates/', methods=['GET'])
 def api_front():
-    # return jsonify(rates)
-    # return_str = ', '.join(rates)
-    print(str(rates))
     return str(rates)
 
 
